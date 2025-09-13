@@ -1,10 +1,32 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"learntogo/person"
+	"strings"
+)
 
 /* Collection of small introductory exercises by ChatGPT do learn Go */
 func main() {
-	fmt.Println(doubleAll([]int{1, 2, 3})) // [2 4 6]
+	p1 := &person.Person{Name: "Alice", Age: 15}
+	p2 := &person.Person{Name: "Bob", Age: 17}
+	p3 := &person.Person{Name: "Charlie", Age: 19}
+
+	p1.AddFriend(p1)
+	p1.AddFriend(p2)
+	p1.AddFriend(p2)
+	p1.AddFriend(p3)
+	fmt.Println("Alice's friends before:", strings.Join(p1.FriendNames(), ", "))
+}
+
+// 5. Write a function countLetters(s string) map[rune]int that returns a map with the frequency of each letter in the string.
+func countLetters(s string) map[rune]int {
+	res := map[rune]int{}
+	for _, r := range s {
+		res[r]++
+	}
+
+	return res
 }
 
 // 4. Write a function doubleAll(nums []int) []int that takes a slice of ints and returns a new slice where every number is doubled.
