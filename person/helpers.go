@@ -2,6 +2,17 @@ package person
 
 import "strconv"
 
+func NewPerson(name string, age int) *Person {
+	if age < 0 { 
+		age = 0
+	}
+	return &Person{
+		Name: name, 
+		Age: age, 
+		Friends: []*Person{},
+	}
+}
+
 func (p Person) Greet() string {
 	return "Hello my name is " + p.Name + " and I am " + strconv.Itoa(p.Age) + " years old."
 }

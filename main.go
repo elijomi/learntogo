@@ -8,14 +8,15 @@ import (
 
 /* Collection of small introductory exercises by ChatGPT do learn Go */
 func main() {
-	p1 := &person.Person{Name: "Alice", Age: 15}
-	p2 := &person.Person{Name: "Bob", Age: 17}
-	p3 := &person.Person{Name: "Charlie", Age: 19}
+	p1 := person.NewPerson("Alice", -2)
+	p2 := person.NewPerson("Bob", 17)
+	p3 := person.NewPerson("Charlie", 19)
 
 	p1.AddFriend(p1)
 	p1.AddFriend(p2)
 	p1.AddFriend(p2)
 	p1.AddFriend(p3)
+	fmt.Println(p1.Greet())
 	fmt.Println("Alice's friends before:", strings.Join(p1.FriendNames(), ", "))
 }
 
