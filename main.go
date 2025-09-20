@@ -2,61 +2,91 @@ package main
 
 import (
 	"fmt"
-	"learntogo/person"
-	"strings"
+	tasktracker "learntogo/tasktracker"
+	"os"
+	"strconv"
 )
 
-/* Collection of small introductory exercises by ChatGPT do learn Go */
+var taskList *tasktracker.TaskList // todo swap out with persist to json file
+
 func main() {
-	p1 := person.NewPerson("Alice", -2)
-	p2 := person.NewPerson("Bob", 17)
-	p3 := person.NewPerson("Charlie", 19)
-
-	p1.AddFriend(p1)
-	p1.AddFriend(p2)
-	p1.AddFriend(p2)
-	p1.AddFriend(p3)
-	fmt.Println(p1.Greet())
-	fmt.Println("Alice's friends before:", strings.Join(p1.FriendNames(), ", "))
-}
-
-// 5. Write a function countLetters(s string) map[rune]int that returns a map with the frequency of each letter in the string.
-func countLetters(s string) map[rune]int {
-	res := map[rune]int{}
-	for _, r := range s {
-		res[r]++
+	if len(os.Args) < 2 {
+		fmt.Println("Usage: tasktracker <command> [options]")
+		return
 	}
 
-	return res
+	taskList = tasktracker.NewTaskList("Daily Tasks")
+
+	// todo add a continuous prompt
+
+	switch os.Args[1] {
+	case "list":
+		list()
+	case "add":
+		if len(os.Args) < 6 || os.Args[2] != "--id" {
+			fmt.Println("Usage: tasktracker add --title <string> --priority <number>")
+			return
+		}
+		title := os.Args[3]
+		priority, err := strconv.Atoi(os.Args[4])
+		if err != nil {
+			fmt.Println("Invalid priority:", os.Args[4])
+			return
+		}
+
+		add(title, priority)
+	case "done":
+		if len(os.Args) < 4 || os.Args[2] != "--id" {
+			fmt.Println("Usage: tasktracker done --id <number>")
+			return
+		}
+		id, err := strconv.Atoi(os.Args[3])
+		if err != nil {
+			fmt.Println("Invalid id:", os.Args[3])
+			return
+		}
+
+		done(id)
+	case "delete":
+		if len(os.Args) < 4 || os.Args[2] != "--id" {
+			fmt.Println("Usage: tasktracker delete --id <number>")
+			return
+		}
+		id, err := strconv.Atoi(os.Args[3])
+		if err != nil {
+			fmt.Println("Invalid id:", os.Args[3])
+			return
+		}
+
+		delete(id)
+	}
 }
 
-// 4. Write a function doubleAll(nums []int) []int that takes a slice of ints and returns a new slice where every number is doubled.
-func doubleAll(nums []int) []int {
-	res := make([]int, len(nums)) // new slice same length as nums
-	for i := 0; i < len(nums); i++ {
-		res[i] = nums[i] * 2
+func add(title string, priority int) {
+	task := tasktracker.NewTask(title, priority)
+	taskList.AddTask(task)
+}
+
+func list() {
+	fmt.Println(taskList)
+}
+
+func done(id int) {
+	task := taskList.Find(id)
+	if task == nil {
+		fmt.Println("No such task!")
+		return
 	}
 
-	return res
+	task.Done = true
+	fmt.Printf("Task #%d marked as done.\n", id)
 }
 
-// 3. Write a function sumToN(n int) int that returns the sum of all numbers from 1 to n using a for loop.
-func sumToN(n int) int {
-	sum, i := 0, 0
-	for i < n {
-		i++
-		sum += i
+func delete(id int) {
+	task := taskList.Delete(id)
+	if task == nil {
+		fmt.Println("No such task!")
+		return
 	}
-
-	return sum
-}
-
-// 2: Write a function add(a int, b int) int that returns the sum.
-func add(a int, b int) int {
-	return a + b
-}
-
-// 1: Define a function hello(name string) string that returns "Hello, <name>!".
-func hello(name string) string {
-	return "Hello, " + name + "!"
+	fmt.Printf("Deleted task #%d.\n", id)
 }
